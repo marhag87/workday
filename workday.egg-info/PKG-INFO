@@ -1,0 +1,13 @@
+Metadata-Version: 1.1
+Name: workday
+Version: 0.1.0
+Summary: Keep track of your workday time
+Home-page: https://github.com/marhag87/workday
+Author: marhag87
+Author-email: marhag87@gmail.com
+License: WTFPL
+Description: A module that keeps track of how long you have worked and when you can go home.
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3.7

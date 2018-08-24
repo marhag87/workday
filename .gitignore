@@ -1,0 +1,12 @@
+*.swp
+.idea
+*.pyc
+dist
+htmlcov
+.coverage
+.tox
+tests/days.log
+tests/end_of_day
+tests/end_of_lunch
+tests/start_of_day
+tests/start_of_lunch
