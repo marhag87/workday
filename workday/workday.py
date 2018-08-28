@@ -7,7 +7,7 @@ WORKDAY_HOURS = 8
 CURRENT_WEEK = datetime.now().isocalendar()[1]
 
 
-def time_format(diff) -> str:
+def time_format(diff: timedelta) -> str:
     prefix = ''
     if diff < timedelta(seconds=0):
         prefix = '-'
@@ -18,13 +18,10 @@ def time_format(diff) -> str:
 
 class Day:
     def __init__(self, start_day=0, start_lunch=0, end_lunch=0, end_day=0):
-        self.start_day = datetime.fromtimestamp(start_day)
+        self.start_day = datetime.now() if start_day == 0 else datetime.fromtimestamp(start_day)
         self.start_lunch = datetime.fromtimestamp(start_lunch)
         self.end_lunch = datetime.fromtimestamp(end_lunch)
-        if end_day == 0:
-            self.end_day = datetime.now()
-        else:
-            self.end_day = datetime.fromtimestamp(end_day)
+        self.end_day = datetime.now() if end_day == 0 else datetime.fromtimestamp(end_day)
 
     def from_line(self, line) -> None:
         times = line.strip().split(' ')
@@ -99,6 +96,10 @@ if __name__ == '__main__':
     workday.load()
     current_day=workday.current_day()
     print(
-        f'{time_format(current_day.day_time())} ({time_format(current_day.until_workday_done())}) | {time_format(workday.week_total())}'
+        '{} ({}) | {} | {}'.format(
+            time_format(current_day.day_time()),
+            time_format(current_day.until_workday_done()),
+            time_format(workday.week_total()),
+            workday.when_leave().strftime('%H:%M')
+        )
     )
-    print(workday.when_leave())
