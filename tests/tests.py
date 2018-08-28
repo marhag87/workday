@@ -171,17 +171,17 @@ class TestFormat(unittest.TestCase):
         )
         # Test that it colors green when over threshold
         self.assertEqual(
-            time_format(timedelta(hours=8), tmux=True, threshold=(7*60*60)),
+            time_format(timedelta(hours=8), threshold=(7*60*60)),
             '#[fg=green]08:00#[default]',
         )
         # Test that it colors green when exactly on threshold
         self.assertEqual(
-            time_format(timedelta(hours=8), tmux=True, threshold=(8 * 60 * 60)),
+            time_format(timedelta(hours=8), threshold=(8 * 60 * 60)),
             '#[fg=green]08:00#[default]',
         )
         # Test that it colors red when under threshold
         self.assertEqual(
-            time_format(timedelta(hours=7), tmux=True, threshold=(8 * 60 * 60)),
+            time_format(timedelta(hours=7), threshold=(8 * 60 * 60)),
             '#[fg=red]07:00#[default]',
         )
 

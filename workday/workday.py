@@ -7,20 +7,20 @@ WORKDAY_HOURS = 8
 CURRENT_WEEK = datetime.now().isocalendar()[1]
 
 
-def time_format(diff: timedelta, tmux=False, threshold=0) -> str:
+def time_format(diff: timedelta, threshold=None) -> str:
     color = '#[fg=red]'
     default = '#[default]'
     prefix = ''
     if diff < timedelta(seconds=0):
         prefix = '-'
-    if diff >= timedelta(seconds=threshold):
+    if threshold is not None and diff >= timedelta(seconds=threshold):
         color = '#[fg=green]'
     hours = int(abs(diff.total_seconds()) / 3600)
     minutes = int((abs(diff.total_seconds()) - hours * 3600) / 60)
-    if tmux:
-        return f'{color}{prefix}{str(hours).zfill(2)}:{str(minutes).zfill(2)}{default}'
-    else:
+    if threshold is None:
         return f'{prefix}{str(hours).zfill(2)}:{str(minutes).zfill(2)}'
+    else:
+        return f'{color}{prefix}{str(hours).zfill(2)}:{str(minutes).zfill(2)}{default}'
 
 def time_format_absolute(time: datetime, threshold=None) -> str:
     """
@@ -124,9 +124,9 @@ if __name__ == '__main__':
 
     print(
         '{} ({}) | {} | {}'.format(
-            time_format(current_day.day_time(), tmux=True, threshold=(8*60*60)),
+            time_format(current_day.day_time(), threshold=(8*60*60)),
             time_format(current_day.until_workday_done()),
-            time_format(workday.week_total(), tmux=True, threshold=(7*8*60*60)),
+            time_format(workday.week_total(), threshold=(7*8*60*60)),
             time_format_absolute(datetime.now(), workday.when_leave()),
         )
     )
