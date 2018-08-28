@@ -1,5 +1,5 @@
 import unittest
-from workday import Workday
+from workday import Workday, time_format, time_format_absolute
 from datetime import datetime, timedelta
 from freezegun import freeze_time
 
@@ -160,6 +160,60 @@ class TestWorkday(unittest.TestCase):
         self.assertEqual(
             self.workday.when_leave(),
             datetime(2018, 8, 22, 17, 40),
+        )
+
+class TestFormat(unittest.TestCase):
+    def test_timedelta(self):
+        # Test without tmux
+        self.assertEqual(
+            time_format(timedelta(hours=8)),
+            '08:00',
+        )
+        # Test that it colors green when over threshold
+        self.assertEqual(
+            time_format(timedelta(hours=8), tmux=True, threshold=(7*60*60)),
+            '#[fg=green]08:00#[default]',
+        )
+        # Test that it colors green when exactly on threshold
+        self.assertEqual(
+            time_format(timedelta(hours=8), tmux=True, threshold=(8 * 60 * 60)),
+            '#[fg=green]08:00#[default]',
+        )
+        # Test that it colors red when under threshold
+        self.assertEqual(
+            time_format(timedelta(hours=7), tmux=True, threshold=(8 * 60 * 60)),
+            '#[fg=red]07:00#[default]',
+        )
+
+    def test_timedelta_absolute(self):
+        # Test without tmux
+        self.assertEqual(
+            time_format_absolute(datetime.strptime('2018-08-22 17:00', '%Y-%m-%d %H:%M')),
+            '17:00',
+        )
+        # Test that it colors green when over threshold
+        self.assertEqual(
+            time_format_absolute(
+                datetime.strptime('2018-08-22 17:00', '%Y-%m-%d %H:%M'),
+                threshold=datetime.strptime('2018-08-22 16:00', '%Y-%m-%d %H:%M'),
+            ),
+            '#[fg=green]16:00#[default]',
+        )
+        # Test that it colors green when exactly on threshold
+        self.assertEqual(
+            time_format_absolute(
+                datetime.strptime('2018-08-22 17:00', '%Y-%m-%d %H:%M'),
+                threshold=datetime.strptime('2018-08-22 17:00', '%Y-%m-%d %H:%M'),
+            ),
+            '#[fg=green]17:00#[default]',
+        )
+        # Test that it colors red when under threshold
+        self.assertEqual(
+            time_format_absolute(
+                datetime.strptime('2018-08-22 16:00', '%Y-%m-%d %H:%M'),
+                threshold=datetime.strptime('2018-08-22 17:00', '%Y-%m-%d %H:%M'),
+            ),
+            '#[fg=red]17:00#[default]',
         )
 
 if __name__ == '__main__':

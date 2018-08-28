@@ -7,14 +7,40 @@ WORKDAY_HOURS = 8
 CURRENT_WEEK = datetime.now().isocalendar()[1]
 
 
-def time_format(diff: timedelta) -> str:
+def time_format(diff: timedelta, tmux=False, threshold=0) -> str:
+    color = '#[fg=red]'
+    default = '#[default]'
     prefix = ''
     if diff < timedelta(seconds=0):
         prefix = '-'
+    if diff >= timedelta(seconds=threshold):
+        color = '#[fg=green]'
     hours = int(abs(diff.total_seconds()) / 3600)
     minutes = int((abs(diff.total_seconds()) - hours * 3600) / 60)
-    return f'{prefix}{str(hours).zfill(2)}:{str(minutes).zfill(2)}'
+    if tmux:
+        return f'{color}{prefix}{str(hours).zfill(2)}:{str(minutes).zfill(2)}{default}'
+    else:
+        return f'{prefix}{str(hours).zfill(2)}:{str(minutes).zfill(2)}'
 
+def time_format_absolute(time: datetime, threshold=None) -> str:
+    """
+    If only time is sent, return time in format of HH:MM
+    If time and threshold is sent, returns threshold in format of HH:MM with
+    added tmux color codes dependant on time in relation to threshold. In this
+    case, time should be the current time and threshold the comparison.
+    """
+    color = '#[fg=red]'
+    default = '#[default]'
+    if threshold is None:
+        return datetime.strftime(time, '%H:%M')
+    else:
+        if time >= threshold:
+            color = '#[fg=green]'
+        return '{}{}{}'.format(
+            color,
+            datetime.strftime(threshold, '%H:%M'),
+            default,
+        )
 
 class Day:
     def __init__(self, start_day=0, start_lunch=0, end_lunch=0, end_day=0):
@@ -95,11 +121,12 @@ if __name__ == '__main__':
     workday = Workday()
     workday.load()
     current_day=workday.current_day()
+
     print(
         '{} ({}) | {} | {}'.format(
-            time_format(current_day.day_time()),
+            time_format(current_day.day_time(), tmux=True, threshold=(8*60*60)),
             time_format(current_day.until_workday_done()),
-            time_format(workday.week_total()),
-            workday.when_leave().strftime('%H:%M')
+            time_format(workday.week_total(), tmux=True, threshold=(7*8*60*60)),
+            time_format_absolute(datetime.now(), workday.when_leave()),
         )
     )
