@@ -77,6 +77,14 @@ class Day:
         self.end_lunch = datetime.fromtimestamp(int(times[2]))
         self.end_day = datetime.fromtimestamp(int(times[3]))
 
+    def to_line(self) -> str:
+        return '{} {} {} {}\n'.format(
+            int(datetime.timestamp(self.start_day)),
+            int(datetime.timestamp(self.start_lunch)),
+            int(datetime.timestamp(self.end_lunch)),
+            int(datetime.timestamp(self.end_day)),
+        )
+
     def day_time(self) -> timedelta:
         return self.end_day-self.start_day-(self.end_lunch-self.start_lunch)
 
@@ -124,6 +132,10 @@ class Workday:
         self.config[parameter] = value
         write_config(self.configfile, self.config)
 
+    def log_day(self) -> None:
+        with open(self.days_file, 'a') as file:
+            file.write(self.current_day().to_line())
+
     def reset(self) -> None:
         self.set_config('start_day', 0)
         self.set_config('start_lunch', 0)
@@ -138,7 +150,7 @@ class Workday:
             start_day=self.config.get('start_day', 0),
             start_lunch=self.config.get('start_lunch', 0),
             end_lunch=self.config.get('end_lunch', 0),
-            end_day=0,
+            end_day=self.config.get('end_day', 0),
         )
 
     def week_total(self) -> timedelta:
@@ -224,6 +236,7 @@ if __name__ == '__main__':
         metavar='HH:MM',
         nargs=2,
     )
+    parser.add_argument('--log-day', '-l', help='add day to persistent log', action='store_true')
     parser.add_argument('--reset', '-r', help='reset data for today', action='store_true')
     parser.add_argument('--tmux', '-t', help='print tmux format', action='store_true')
     parser.add_argument('--weeks', '-w', help='print weeks status', action='store_true')
@@ -238,6 +251,8 @@ if __name__ == '__main__':
     elif args.lunch is not None:
         workday.set_config('start_lunch', timestamp_from_string(args.lunch[0]))
         workday.set_config('end_lunch', timestamp_from_string(args.lunch[1]))
+    elif args.log_day:
+        workday.log_day()
     elif args.tmux:
         workday.load()
         print(workday.tmux_status())

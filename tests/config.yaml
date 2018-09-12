@@ -1,5 +1,5 @@
 days_file: tests/days.log
 end_day: 0
-end_lunch: 0
-start_day: 0
-start_lunch: 0
+end_lunch: 1534932000
+start_day: 1534917600
+start_lunch: 1534928400
