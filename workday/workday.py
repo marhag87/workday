@@ -171,8 +171,8 @@ class Workday:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--tmux', '-t', help='print tmux format', action='store_const', const=True)
-    parser.add_argument('--weeks', '-w', help='print weeks status', action='store_const', const=True)
+    parser.add_argument('--tmux', '-t', help='print tmux format', action='store_true')
+    parser.add_argument('--weeks', '-w', help='print weeks status', action='store_true')
     args = parser.parse_args()
     workday = Workday()
     workday.load()
