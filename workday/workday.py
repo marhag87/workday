@@ -171,10 +171,19 @@ class Workday:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--config',
+        '-c',
+        help='location of configuration file',
+        action='store',
+        nargs='?',
+        const=None,
+        default=None,
+    )
     parser.add_argument('--tmux', '-t', help='print tmux format', action='store_true')
     parser.add_argument('--weeks', '-w', help='print weeks status', action='store_true')
     args = parser.parse_args()
-    workday = Workday()
+    workday = Workday(configfile=args.config)
     workday.load()
     if args.tmux:
         print(workday.tmux_status())
