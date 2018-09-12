@@ -180,3 +180,5 @@ if __name__ == '__main__':
         print(workday.tmux_status())
     elif args.weeks:
         print(workday.workday_status())
+    else:
+        parser.print_help()
