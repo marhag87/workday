@@ -43,6 +43,12 @@ def time_format_absolute(time: datetime, threshold=None) -> str:
             default,
         )
 
+def total_format(week_total: timedelta) -> str:
+    if week_total != timedelta():
+        return f'  -----\n  Total: {time_format(week_total)}\n'
+    else:
+        return ''
+
 class Day:
     def __init__(self, start_day=0, start_lunch=0, end_lunch=0, end_day=0):
         self.start_day = datetime.now() if start_day == 0 else datetime.fromtimestamp(start_day)
@@ -67,6 +73,10 @@ class Day:
     def week(self):
         return self.start_day.isocalendar()[1]
 
+    @property
+    def day_name(self):
+        return self.start_day.strftime('%A')
+
 class Workday:
     def __init__(self, configfile=None):
         if configfile is None:
@@ -78,6 +88,7 @@ class Workday:
         self.total_time = timedelta()
         self.total_days = 0
         self.week_days = []
+        self.all_days = []
 
     def load(self) -> None:
         with open(self.days_file) as file:
@@ -85,10 +96,12 @@ class Workday:
                 day = Day()
                 day.from_line(line)
 
+                self.all_days.append(day)
                 self.until_today += day.day_time()
                 self.until_today_days += 1
                 if day.week == CURRENT_WEEK:
                     self.week_days.append(day)
+            self.all_days.append(self.current_day())
             self.total_time = self.until_today + self.current_day().day_time()
             self.total_days = self.until_today_days + 1
 
@@ -127,11 +140,43 @@ class Workday:
             time_format_absolute(datetime.now(), self.when_leave()),
         )
 
+    def workday_status(self):
+        week = None
+        week_total = timedelta()
+        result = ''
+        for day in self.all_days:
+            if week != day.week:
+                result += total_format(week_total)
+                result += str(day.week) + '\n'
+                week = day.week
+                week_total = timedelta()
+
+            result += '  {} {}\n'.format(
+                day.day_name,
+                time_format(day.day_time()),
+            )
+            week_total += day.day_time()
+        result += total_format(week_total)
+        result += '\nFlex (until today): {}'.format(
+            time_format(self.flex()),
+        )
+        result += '\nFlex (leave now): {}'.format(
+            time_format(datetime.now()-self.when_leave())
+        )
+        result += '\nZero flex at: {}'.format(
+            time_format_absolute(self.when_leave())
+        )
+        return result
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--tmux', '-t', help='print tmux format', action='store_const', const=True)
+    parser.add_argument('--weeks', '-w', help='print weeks status', action='store_const', const=True)
     args = parser.parse_args()
     workday = Workday()
     workday.load()
     if args.tmux:
         print(workday.tmux_status())
+    elif args.weeks:
+        print(workday.workday_status())

@@ -1,5 +1,5 @@
 import unittest
-from workday import Workday, time_format, time_format_absolute
+from workday import Workday, Day, time_format, time_format_absolute
 from datetime import datetime, timedelta
 from freezegun import freeze_time
 
@@ -185,6 +185,41 @@ class TestWorkday(unittest.TestCase):
             '#[fg=red]04:30#[default] (03:30) | #[fg=red]04:30#[default] | #[fg=red]17:40#[default]',
         )
 
+    def test_workday_status_string(self):
+        """Test that the summary can be printed"""
+        self.files.add_log(
+            start_day=datetime(2018, 8, 17, 8, 0),
+            start_lunch=datetime(2018, 8, 17, 11, 0),
+            end_lunch=datetime(2018, 8, 17, 12, 0),
+            end_day=datetime(2018, 8, 17, 16, 30),
+        )
+        self.files.add_log(
+            start_day=datetime(2018, 8, 21, 8, 0),
+            start_lunch=datetime(2018, 8, 21, 11, 0),
+            end_lunch=datetime(2018, 8, 21, 12, 0),
+            end_day=datetime(2018, 8, 21, 16, 50),
+        )
+        self.files.start_day = datetime(2018, 8, 22, 8, 0)
+        self.files.start_lunch = datetime(2018, 8, 22, 11, 0)
+        self.files.end_lunch = datetime(2018, 8, 22, 12, 0)
+        self.workday.load()
+        self.assertEqual(
+            self.workday.workday_status(),
+            '''33
+  Friday 07:30
+  -----
+  Total: 07:30
+34
+  Tuesday 07:50
+  Wednesday 04:30
+  -----
+  Total: 12:20
+
+Flex (until today): -00:40
+Flex (leave now): -04:10
+Zero flex at: 17:40''',
+        )
+
 class TestFormat(unittest.TestCase):
     def test_timedelta(self):
         # Test without tmux
@@ -238,6 +273,23 @@ class TestFormat(unittest.TestCase):
             ),
             '#[fg=red]17:00#[default]',
         )
+
+@freeze_time("2018-08-22 13:30")
+class TestDay(unittest.TestCase):
+    def test_day_name(self):
+        day = Day()
+        self.assertEqual(
+            day.day_name,
+            'Wednesday',
+        )
+
+    def test_week(self):
+        day = Day()
+        self.assertEqual(
+            day.week,
+            34,
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
