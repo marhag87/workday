@@ -51,10 +51,11 @@ def total_format(week_total: timedelta) -> str:
 
 class Day:
     def __init__(self, start_day=0, start_lunch=0, end_lunch=0, end_day=0):
-        self.start_day = datetime.now() if start_day == 0 else datetime.fromtimestamp(start_day)
-        self.start_lunch = datetime.fromtimestamp(start_lunch)
-        self.end_lunch = datetime.fromtimestamp(end_lunch)
-        self.end_day = datetime.now() if end_day == 0 else datetime.fromtimestamp(end_day)
+        now = datetime.now()
+        self.start_day = now if start_day == 0 else datetime.fromtimestamp(start_day)
+        self.start_lunch = now if start_lunch == 0 else datetime.fromtimestamp(start_lunch)
+        self.end_lunch = now if end_lunch == 0 else datetime.fromtimestamp(end_lunch)
+        self.end_day = now if end_day == 0 else datetime.fromtimestamp(end_day)
 
     def from_line(self, line) -> None:
         times = line.strip().split(' ')
