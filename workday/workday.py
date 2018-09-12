@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from pathlib import Path
 import argparse
-from pyyamlconfig import load_config
+from pyyamlconfig import load_config, write_config
 
 
 WORKDAY_HOURS = 8
@@ -43,6 +43,19 @@ def time_format_absolute(time: datetime, threshold=None) -> str:
             default,
         )
 
+def timestamp_from_string(datestring: str) -> int:
+    hour, minute = datestring.split(':')
+    now = datetime.now()
+    return int(
+        datetime(
+            year=now.year,
+            month=now.month,
+            day=now.day,
+            hour=int(hour),
+            minute=int(minute),
+        ).timestamp()
+    )
+
 def total_format(week_total: timedelta) -> str:
     if week_total != timedelta():
         return f'  -----\n  Total: {time_format(week_total)}\n'
@@ -82,6 +95,7 @@ class Workday:
     def __init__(self, configfile=None):
         if configfile is None:
             configfile = f'{Path.home()}/.config/workday.yaml'
+        self.configfile = configfile
         self.config = load_config(configfile)
         self.days_file = self.config.get('days_file')
         self.until_today = timedelta()
@@ -106,18 +120,24 @@ class Workday:
             self.total_time = self.until_today + self.current_day().day_time()
             self.total_days = self.until_today_days + 1
 
+    def set_config(self, parameter, value):
+        self.config[parameter] = value
+        write_config(self.configfile, self.config)
+
+    def reset(self) -> None:
+        self.set_config('start_day', 0)
+        self.set_config('start_lunch', 0)
+        self.set_config('end_lunch', 0)
+        self.set_config('end_day', 0)
+
     def flex(self) -> timedelta:
         return self.until_today - timedelta(hours=(self.until_today_days * WORKDAY_HOURS))
 
-    def get_single_time_from_file(self, config_name) -> int:
-        with open(self.config.get(config_name)) as file:
-            return int(file.read().strip())
-
     def current_day(self) -> Day:
         return Day(
-            start_day=self.get_single_time_from_file('start_day_file'),
-            start_lunch=self.get_single_time_from_file('start_lunch_file'),
-            end_lunch=self.get_single_time_from_file('end_lunch_file'),
+            start_day=self.config.get('start_day', 0),
+            start_lunch=self.config.get('start_lunch', 0),
+            end_lunch=self.config.get('end_lunch', 0),
             end_day=0,
         )
 
@@ -181,14 +201,48 @@ if __name__ == '__main__':
         const=None,
         default=None,
     )
+    parser.add_argument(
+        '--start-day',
+        help='start day at HH:MM, defaults to current time',
+        action='store',
+        metavar='HH:MM',
+        nargs='?',
+        const=time_format_absolute(datetime.now()),
+    )
+    parser.add_argument(
+        '--end-day',
+        help='end day at HH:MM, defaults to current time',
+        action='store',
+        metavar='HH:MM',
+        nargs='?',
+        const=time_format_absolute(datetime.now()),
+    )
+    parser.add_argument(
+        '--lunch',
+        help='lunch occured between HH:MM and HH:MM',
+        action='store',
+        metavar='HH:MM',
+        nargs=2,
+    )
+    parser.add_argument('--reset', '-r', help='reset data for today', action='store_true')
     parser.add_argument('--tmux', '-t', help='print tmux format', action='store_true')
     parser.add_argument('--weeks', '-w', help='print weeks status', action='store_true')
     args = parser.parse_args()
     workday = Workday(configfile=args.config)
-    workday.load()
-    if args.tmux:
+    if args.reset:
+        workday.reset()
+    elif args.start_day is not None:
+        workday.set_config('start_day', timestamp_from_string(args.start_day))
+    elif args.end_day is not None:
+        workday.set_config('end_day', timestamp_from_string(args.end_day))
+    elif args.lunch is not None:
+        workday.set_config('start_lunch', timestamp_from_string(args.lunch[0]))
+        workday.set_config('end_lunch', timestamp_from_string(args.lunch[1]))
+    elif args.tmux:
+        workday.load()
         print(workday.tmux_status())
     elif args.weeks:
+        workday.load()
         print(workday.workday_status())
     else:
         parser.print_help()

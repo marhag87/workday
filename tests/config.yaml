@@ -1,5 +1,5 @@
 days_file: tests/days.log
-start_day_file: tests/start_of_day
-start_lunch_file: tests/start_of_lunch
-end_lunch_file: tests/end_of_lunch
-end_day_file: tests/end_of_day
+end_day: 0
+end_lunch: 0
+start_day: 0
+start_lunch: 0

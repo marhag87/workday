@@ -5,4 +5,5 @@ from workday.workday import (
     CURRENT_WEEK,
     time_format,
     time_format_absolute,
+    timestamp_from_string,
 )
