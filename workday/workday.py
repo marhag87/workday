@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from pathlib import Path
+import argparse
 from pyyamlconfig import load_config
 
 
@@ -117,16 +118,20 @@ class Workday:
         """When you can leave and have zero flex"""
         return datetime.now() + self.current_day().until_workday_done() - self.flex()
 
+    def tmux_status(self) -> str:
+        current_day = self.current_day()
+        return '{} ({}) | {} | {}'.format(
+            time_format(current_day.day_time(), threshold=(8 * 60 * 60)),
+            time_format(current_day.until_workday_done()),
+            time_format(self.week_total(), threshold=(7 * 8 * 60 * 60)),
+            time_format_absolute(datetime.now(), self.when_leave()),
+        )
+
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--tmux', '-t', help='print tmux format', action='store_const', const=True)
+    args = parser.parse_args()
     workday = Workday()
     workday.load()
-    current_day=workday.current_day()
-
-    print(
-        '{} ({}) | {} | {}'.format(
-            time_format(current_day.day_time(), threshold=(8*60*60)),
-            time_format(current_day.until_workday_done()),
-            time_format(workday.week_total(), threshold=(7*8*60*60)),
-            time_format_absolute(datetime.now(), workday.when_leave()),
-        )
-    )
+    if args.tmux:
+        print(workday.tmux_status())

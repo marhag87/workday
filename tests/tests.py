@@ -162,6 +162,29 @@ class TestWorkday(unittest.TestCase):
             datetime(2018, 8, 22, 17, 40),
         )
 
+    def test_tmux_string(self):
+        """Test that a tmux string can be printed"""
+        self.files.add_log(
+            start_day=datetime(2018, 8, 20, 8, 0),
+            start_lunch=datetime(2018, 8, 20, 11, 0),
+            end_lunch=datetime(2018, 8, 20, 12, 0),
+            end_day=datetime(2018, 8, 20, 16, 30),
+        )
+        self.files.add_log(
+            start_day=datetime(2018, 8, 21, 8, 0),
+            start_lunch=datetime(2018, 8, 21, 11, 0),
+            end_lunch=datetime(2018, 8, 21, 12, 0),
+            end_day=datetime(2018, 8, 21, 16, 50),
+        )
+        self.files.start_day = datetime(2018, 8, 22, 8, 0)
+        self.files.start_lunch = datetime(2018, 8, 22, 11, 0)
+        self.files.end_lunch = datetime(2018, 8, 22, 12, 0)
+        self.workday.load()
+        self.assertEqual(
+            self.workday.tmux_status(),
+            '#[fg=red]04:30#[default] (03:30) | #[fg=red]04:30#[default] | #[fg=red]17:40#[default]',
+        )
+
 class TestFormat(unittest.TestCase):
     def test_timedelta(self):
         # Test without tmux
