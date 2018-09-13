@@ -18,7 +18,6 @@ setup(
     description='Keep track of your workday time',
     long_description='A module that keeps track of how long you have worked and when you can go home.',
     install_requires=[
-        'requests',
         'pyyamlconfig',
     ],
     classifiers=[
@@ -26,4 +25,5 @@ setup(
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 3.7',
     ],
+    scripts=['workday/workday.py'],
 )
