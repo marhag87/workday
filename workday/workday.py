@@ -238,12 +238,15 @@ if __name__ == '__main__':
     )
     parser.add_argument('--log-day', '-l', help='add day to persistent log', action='store_true')
     parser.add_argument('--reset', '-r', help='reset data for today', action='store_true')
+    parser.add_argument('--reset-end', help='reset data for end of day', action='store_true')
     parser.add_argument('--tmux', '-t', help='print tmux format', action='store_true')
     parser.add_argument('--weeks', '-w', help='print weeks status', action='store_true')
     args = parser.parse_args()
     workday = Workday(configfile=args.config)
     if args.reset:
         workday.reset()
+    elif args.reset_end:
+        workday.set_config('end_day', 0)
     elif args.start_day is not None:
         workday.set_config('start_day', timestamp_from_string(args.start_day))
     elif args.end_day is not None:
