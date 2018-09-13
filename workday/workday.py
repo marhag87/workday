@@ -230,6 +230,14 @@ if __name__ == '__main__':
         const=time_format_absolute(datetime.now()),
     )
     parser.add_argument(
+        '--start-empty-day',
+        help='start day at HH:MM if no start date has been set, defaults to current time',
+        action='store',
+        metavar='HH:MM',
+        nargs='?',
+        const=time_format_absolute(datetime.now()),
+    )
+    parser.add_argument(
         '--end-day',
         help='end day at HH:MM, defaults to current time',
         action='store',
@@ -257,6 +265,9 @@ if __name__ == '__main__':
         workday.set_config('end_day', 0)
     elif args.start_day is not None:
         workday.set_config('start_day', timestamp_from_string(args.start_day))
+    elif args.start_empty_day is not None:
+        if workday.config.get('start_day', 0) == 0:
+            workday.set_config('start_day', int(datetime.now().timestamp()))
     elif args.end_day is not None:
         workday.set_config('end_day', timestamp_from_string(args.end_day))
     elif args.lunch is not None:
