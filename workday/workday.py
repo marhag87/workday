@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from pathlib import Path
 import argparse
+import os
 from pyyamlconfig import load_config, write_config
 
 
@@ -102,7 +103,10 @@ class Day:
 class Workday:
     def __init__(self, configfile=None):
         if configfile is None:
-            configfile = f'{Path.home()}/.config/workday.yaml'
+            if os.name == 'nt':
+                configfile = f'{Path.home()}\workday.yaml'
+            else:
+                configfile = f'{Path.home()}/.config/workday.yaml'
         self.configfile = configfile
         self.config = load_config(configfile)
         self.days_file = self.config.get('days_file')
