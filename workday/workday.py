@@ -118,19 +118,22 @@ class Workday:
         self.all_days = []
 
     def load(self) -> None:
-        with open(self.days_file) as file:
-            for line in file.readlines():
-                day = Day()
-                day.from_line(line)
+        try:
+            with open(self.days_file) as file:
+                for line in file.readlines():
+                    day = Day()
+                    day.from_line(line)
 
-                self.all_days.append(day)
-                self.until_today += day.day_time()
-                self.until_today_days += 1
-                if day.week == CURRENT_WEEK:
-                    self.week_days.append(day)
-            self.all_days.append(self.current_day())
-            self.total_time = self.until_today + self.current_day().day_time()
-            self.total_days = self.until_today_days + 1
+                    self.all_days.append(day)
+                    self.until_today += day.day_time()
+                    self.until_today_days += 1
+                    if day.week == CURRENT_WEEK:
+                        self.week_days.append(day)
+                self.all_days.append(self.current_day())
+                self.total_time = self.until_today + self.current_day().day_time()
+                self.total_days = self.until_today_days + 1
+        except FileNotFoundError:
+            open(self.days_file, 'w').close()
 
     def set_config(self, parameter, value):
         self.config[parameter] = value
