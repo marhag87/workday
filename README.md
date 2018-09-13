@@ -6,7 +6,7 @@ Installation
 ============
 * Install python
 
-* `pip install workday`
+* `pip install .`
 
 * Add a config file with "days_file: \<location of days file\>".
 
