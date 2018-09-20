@@ -12,7 +12,7 @@ setup(
     author='marhag87',
     author_email='marhag87@gmail.com',
     url='https://github.com/marhag87/workday',
-    version='0.1.0',
+    version='0.1.1',
     packages=find_packages(),
     license='WTFPL',
     description='Keep track of your workday time',
