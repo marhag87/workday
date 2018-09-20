@@ -141,8 +141,10 @@ class Workday:
         write_config(self.configfile, self.config)
 
     def log_day(self) -> None:
-        with open(self.days_file, 'a') as file:
-            file.write(self.current_day().to_line())
+        current_day = self.current_day()
+        if current_day.start_day != current_day.end_day:
+            with open(self.days_file, 'a') as file:
+                file.write(current_day.to_line())
 
     def reset(self) -> None:
         self.set_config('start_day', 0)

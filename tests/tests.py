@@ -157,6 +157,32 @@ Flex (leave now): -04:10
 Zero flex at: 17:40''',
         )
 
+    def test_log(self):
+        """Test that a day is logged"""
+        self.workday.log_day()
+        with open(self.workday.days_file) as file:
+            lines = file.readlines()
+            last = lines[-1]
+        self.assertEqual(
+            last,
+            '1534917600 1534928400 1534932000 1534937400\n',
+        )
+
+    def test_log_empty(self):
+        """Test that a day isn't logged if empty"""
+        self.workday.set_config('start_day', 0)
+        self.workday.set_config('start_lunch', 0)
+        self.workday.set_config('end_lunch', 0)
+        self.workday.set_config('end_day', 0)
+        self.workday.log_day()
+        with open(self.workday.days_file) as file:
+            lines = file.readlines()
+            try:
+                last = lines[-1]
+            except IndexError:
+                last = None
+        self.assertIsNone(last)
+
 class TestFormat(unittest.TestCase):
     def test_timedelta(self):
         # Test without tmux
