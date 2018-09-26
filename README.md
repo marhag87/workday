@@ -67,3 +67,5 @@ Use the following triggers and actions:
 * At system shutdown: run script with "--end-day"
 
 System shutdown is not a normal trigger. You can use "on event" with Log: System, Source: User32, Event ID: 1074
+
+If you use a laptop, don't forget to untick "Start the task only if the computer is on AC power" under Conditions, Power.
