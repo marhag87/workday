@@ -1,4 +1,5 @@
 from workday.workday import (
+    __version__,
     Workday,
     Day,
     WORKDAY_HOURS,

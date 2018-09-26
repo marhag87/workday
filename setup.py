@@ -6,13 +6,14 @@ from setuptools import (
     setup,
     find_packages,
 )
+from workday import __version__
 
 setup(
     name='workday',
     author='marhag87',
     author_email='marhag87@gmail.com',
     url='https://github.com/marhag87/workday',
-    version='0.1.1',
+    version=__version__,
     packages=find_packages(),
     license='WTFPL',
     description='Keep track of your workday time',

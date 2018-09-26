@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+__version__ = '0.1.1'
+
 from datetime import datetime, timedelta
 from pathlib import Path
 import argparse
@@ -259,6 +262,7 @@ if __name__ == '__main__':
     parser.add_argument('--reset-end', help='reset data for end of day', action='store_true')
     parser.add_argument('--tmux', '-t', help='print tmux format', action='store_true')
     parser.add_argument('--weeks', '-w', help='print weeks status', action='store_true')
+    parser.add_argument('--version', '-v', help='print version', action='store_true')
     args = parser.parse_args()
     workday = Workday(configfile=args.config)
     if args.reset:
@@ -283,5 +287,7 @@ if __name__ == '__main__':
     elif args.weeks:
         workday.load()
         print(workday.workday_status())
+    elif args.version:
+        print(__version__)
     else:
         parser.print_help()
