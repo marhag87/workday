@@ -182,6 +182,10 @@ class Workday:
         """When you can leave and have zero flex"""
         return datetime.now() + self.current_day().until_workday_done() - self.flex()
 
+    def full_workday(self) -> datetime:
+        """When you have a full workday"""
+        return datetime.now() + self.current_day().until_workday_done()
+
     def tmux_status(self) -> str:
         current_day = self.current_day()
         return '{} ({}) | {} | {}'.format(
@@ -216,6 +220,9 @@ class Workday:
         )
         result += '\nZero flex at: {}'.format(
             time_format_absolute(self.when_leave())
+        )
+        result += '\nFull workday at: {}'.format(
+            time_format_absolute(self.full_workday())
         )
         return result
 

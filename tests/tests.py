@@ -154,7 +154,8 @@ class TestWorkday(unittest.TestCase):
 
 Flex (until today): -00:40
 Flex (leave now): -04:10
-Zero flex at: 17:40''',
+Zero flex at: 17:40
+Full workday at: 17:00''',
         )
 
     def test_log(self):
