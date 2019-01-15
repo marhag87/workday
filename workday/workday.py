@@ -28,6 +28,7 @@ def time_format(diff: timedelta, threshold=None) -> str:
     else:
         return f'{color}{prefix}{str(hours).zfill(2)}:{str(minutes).zfill(2)}{default}'
 
+
 def time_format_absolute(time: datetime, threshold=None) -> str:
     """
     If only time is sent, return time in format of HH:MM
@@ -48,6 +49,7 @@ def time_format_absolute(time: datetime, threshold=None) -> str:
             default,
         )
 
+
 def timestamp_from_string(datestring: str) -> int:
     hour, minute = datestring.split(':')
     now = datetime.now()
@@ -61,11 +63,13 @@ def timestamp_from_string(datestring: str) -> int:
         ).timestamp()
     )
 
+
 def total_format(week_total: timedelta) -> str:
     if week_total != timedelta():
         return f'  -----\n  Total: {time_format(week_total)}\n'
     else:
         return ''
+
 
 class Day:
     def __init__(self, start_day=0, start_lunch=0, end_lunch=0, end_day=0):
@@ -103,6 +107,7 @@ class Day:
     @property
     def day_name(self):
         return self.start_day.strftime('%A')
+
 
 class Workday:
     def __init__(self, configfile=None):
