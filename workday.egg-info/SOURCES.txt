@@ -1,3 +1,5 @@
+README.md
+setup.py
 workday/__init__.py
 workday/workday.py
 workday.egg-info/PKG-INFO

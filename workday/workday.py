@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -212,6 +212,9 @@ class Workday:
             )
             week_total += day.day_time()
         result += total_format(week_total)
+        result += '\nDay started at: {}'.format(
+            time_format_absolute(self.current_day().start_day)
+        )
         result += '\nFlex (until today): {}'.format(
             time_format(self.flex()),
         )

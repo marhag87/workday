@@ -152,6 +152,7 @@ class TestWorkday(unittest.TestCase):
   -----
   Total: 12:20
 
+Day started at: 08:00
 Flex (until today): -00:40
 Flex (leave now): -04:10
 Zero flex at: 17:40
