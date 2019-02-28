@@ -66,7 +66,7 @@ def timestamp_from_string(datestring: str) -> int:
 
 def total_format(week_total: timedelta) -> str:
     if week_total != timedelta():
-        return f'  -----\n  Total: {time_format(week_total)}\n'
+        return f'  -----\n  Total: {time_format(week_total)}'
     else:
         return ''
 
@@ -199,19 +199,24 @@ class Workday:
         week = None
         week_total = timedelta()
         result = ''
+        week_summary_flex = timedelta()
         for day in self.all_days:
             if week != day.week:
                 result += total_format(week_total)
+                if week is not None:
+                    result += ' ({})\n'.format(time_format(week_summary_flex))
                 result += str(day.week) + '\n'
                 week = day.week
                 week_total = timedelta()
 
+            week_summary_flex += day.day_time() - timedelta(hours=WORKDAY_HOURS)
             result += '  {} {}\n'.format(
                 day.day_name,
                 time_format(day.day_time()),
             )
             week_total += day.day_time()
         result += total_format(week_total)
+        result += ' ({})\n'.format(time_format(week_summary_flex))
         result += '\nDay started at: {}'.format(
             time_format_absolute(self.current_day().start_day)
         )

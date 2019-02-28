@@ -145,12 +145,12 @@ class TestWorkday(unittest.TestCase):
             '''33
   Friday 07:30
   -----
-  Total: 07:30
+  Total: 07:30 (-00:30)
 34
   Tuesday 07:50
   Wednesday 04:30
   -----
-  Total: 12:20
+  Total: 12:20 (-04:10)
 
 Day started at: 08:00
 Flex (until today): -00:40
